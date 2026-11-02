@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#04263a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Jadi Ikan — kontrol pakai mulut</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="game"></canvas>
+
+  <div id="hud" class="hidden">
+    <div id="score">0</div>
+    <div id="hint"></div>
+    <div id="camwrap">
+      <video id="cam" playsinline autoplay muted></video>
+      <div id="jaw"><div id="jawfill"></div></div>
+      <div id="camnote">wajah nggak terbaca</div>
+    </div>
+  </div>
+
+  <div class="screen" id="screen-start">
+    <div class="card">
+      <div class="logo">🐟</div>
+      <h1>JADI<br>IKAN</h1>
+      <p class="sub">Hindari pancingan. Kontrolnya pakai <b>muka lu sendiri</b>:<br>
+        <span class="tag up">MANGAP = NAIK</span> <span class="tag down">TUTUP MULUT = TURUN</span></p>
+      <button class="btn primary" id="btn-cam">Nyalakan Kamera</button>
+      <button class="btn ghost" id="btn-touch">Main pakai jari</button>
+      <p class="err" id="cam-err"></p>
+    </div>
+  </div>
+
+  <div class="screen hidden" id="screen-over">
+    <div class="card">
+      <div class="logo">🪝</div>
+      <h2>Kena Pancing!</h2>
+      <div class="stats">
+        <div><span id="final-score">0</span><label>Skor</label></div>
+        <div><span id="best-score">0</span><label>Terbaik</label></div>
+      </div>
+      <div id="snaps" class="hidden">
+        <p class="snap-cap">muka lu tadi 📸</p>
+        <div id="snap-row"></div>
+      </div>
+      <button class="btn share" id="btn-share">Bagikan ke IG / X / FB</button>
+      <p class="err" id="share-note"></p>
+      <button class="btn primary" id="btn-retry">Main Lagi</button>
+      <p class="err" id="over-note"></p>
+    </div>
+  </div>
+</div>
+<script type="module" src="game.js"></script>
+</body>
+</html>
