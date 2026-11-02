@@ -598,14 +598,32 @@ function buildShareCard(faces) {
 
   // caption
   g.fillStyle = "#eaf6ff";
-  g.font = font(58, 800);
-  g.fillText("Kontrol menggunakan gerakan mulut", cw / 2, 1150);
+  g.font = font(54, 800);
+  g.fillText("Kontrol menggunakan gerakan mulut", cw / 2, 1135);
   g.fillStyle = "#a5e3ff";
-  g.font = font(40, 700);
-  g.fillText("Buka mulut = naik  •  Tutup mulut = turun", cw / 2, 1214);
-  g.fillStyle = "rgba(255,255,255,.62)";
-  g.font = font(34, 600);
-  g.fillText("Jadi Ikan — main langsung di browser", cw / 2, 1288);
+  g.font = font(38, 700);
+  g.fillText("Buka mulut = naik  •  Tutup mulut = turun", cw / 2, 1195);
+
+  // watermark
+  const wmText = "https://jadiikan.chasan.id";
+  g.font = font(34, 700);
+  const tm = g.measureText(wmText);
+  const ww = tm.width + 56;
+  const wh = 54;
+  const wx = (cw - ww) / 2;
+  const wy = 1242;
+
+  g.fillStyle = "rgba(4,38,58,.72)";
+  rr(g, wx, wy, ww, wh, 27);
+  g.fill();
+  g.strokeStyle = "rgba(255,255,255,.22)";
+  g.lineWidth = 3;
+  g.stroke();
+
+  g.fillStyle = "#fef3c7";
+  g.textBaseline = "middle";
+  g.fillText(wmText, cw / 2, wy + wh / 2);
+  g.textBaseline = "alphabetic";
 
   return c;
 }
@@ -628,7 +646,7 @@ async function doShare() {
     return;
   }
 
-  const text = `Aku meraih skor ${score} di Jadi Ikan! Kontrol menggunakan gerakan mulut 🐟`;
+  const text = `Aku meraih skor ${score} di Jadi Ikan! Main langsung di https://jadiikan.chasan.id 🐟`;
 
   try {
     const file = new File([blob], `jadi-ikan-${score}.png`, { type: "image/png" });
