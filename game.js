@@ -146,12 +146,12 @@ const FISH_R = 16;
 async function startCamera() {
   camErr.textContent = "";
   btnCam.disabled = true;
-  btnCam.textContent = "Minta izin kamera…";
+  btnCam.textContent = "Meminta izin kamera…";
 
   // kamera cuma boleh di origin aman (https / localhost)
   if (!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     camErr.textContent =
-      "Kamera diblokir karena dibuka lewat http (bukan localhost). Buka lewat https, atau main pakai tombol bawah.";
+      "Kamera tidak dapat diakses melalui HTTP (bukan localhost). Silakan gunakan HTTPS atau pilih mode sentuh.";
     btnCam.disabled = false;
     btnCam.textContent = "Nyalakan Kamera";
     return;
@@ -164,7 +164,7 @@ async function startCamera() {
     });
   } catch (e) {
     camErr.textContent =
-      "Izin kamera ditolak / nggak tersedia. Pakai tombol bawah aja.";
+      "Izin kamera ditolak atau tidak tersedia. Silakan gunakan mode sentuh.";
     btnCam.disabled = false;
     btnCam.textContent = "Nyalakan Kamera";
     return;
@@ -175,7 +175,7 @@ async function startCamera() {
     await video.play();
   } catch (_) {}
 
-  btnCam.textContent = "Nyaliarin model wajah…";
+  btnCam.textContent = "Memuat model wajah…";
   try {
     const mod = await import(CDN);
     const vision = await mod.FilesetResolver.forVisionTasks(`${CDN}/wasm`);
@@ -191,12 +191,12 @@ async function startCamera() {
     console.error("MediaPipe gagal:", e);
     landmarker = null;
     mode = "touch";
-    startGame("Model wajah gagal dimuat — main pakai jari ya.");
+    startGame("Model wajah gagal dimuat — beralih ke mode sentuh.");
     return;
   }
 
   mode = "camera";
-  startGame("MANGAP = naik • TUTUP MULUT = turun");
+  startGame("Buka mulut = naik • Tutup mulut = turun");
 }
 
 function detectFace(ts) {
@@ -218,7 +218,7 @@ function detectFace(ts) {
       mouthRaw = 0;
       mouthOpen = false;
       elCamNote.classList.add("on");
-      elCamNote.textContent = "wajah nggak terbaca";
+      elCamNote.textContent = "Wajah belum terdeteksi";
     }
     return;
   }
@@ -332,7 +332,7 @@ function die() {
   }
   finalScore.textContent = String(score);
   bestScore.textContent = String(best);
-  overNote.textContent = mode === "camera" ? "" : "Tips: nyalain kamera buat kontrol mulut";
+  overNote.textContent = mode === "camera" ? "" : "Tips: Aktifkan kamera untuk bermain dengan gerakan mulut";
   blubOnce();
   setTimeout(() => screenOver.classList.remove("hidden"), 420);
 }
@@ -599,36 +599,36 @@ function buildShareCard(faces) {
   // caption
   g.fillStyle = "#eaf6ff";
   g.font = font(58, 800);
-  g.fillText("kontrolnya pakai MULUT", cw / 2, 1150);
+  g.fillText("Kontrol menggunakan gerakan mulut", cw / 2, 1150);
   g.fillStyle = "#a5e3ff";
   g.font = font(40, 700);
-  g.fillText("mangap = naik  •  tutup mulut = turun", cw / 2, 1214);
+  g.fillText("Buka mulut = naik  •  Tutup mulut = turun", cw / 2, 1214);
   g.fillStyle = "rgba(255,255,255,.62)";
   g.font = font(34, 600);
-  g.fillText("jadi ikan — main langsung di browser", cw / 2, 1288);
+  g.fillText("Jadi Ikan — main langsung di browser", cw / 2, 1288);
 
   return c;
 }
 
 async function doShare() {
-  shareNote.textContent = "Nyiapin gambar…";
+  shareNote.textContent = "Menyiapkan gambar…";
 
   let card;
   try {
     card = buildShareCard(shownFaces);
   } catch (e) {
     console.error("gagal bikin kartu share", e);
-    shareNote.textContent = "Gagal bikin gambar.";
+    shareNote.textContent = "Gagal membuat gambar.";
     return;
   }
 
   const blob = await new Promise((res) => card.toBlob(res, "image/png"));
   if (!blob) {
-    shareNote.textContent = "Gagal bikin gambar.";
+    shareNote.textContent = "Gagal membuat gambar.";
     return;
   }
 
-  const text = `Aku dapet skor ${score} di Jadi Ikan! Kontrolnya pakai mulut 🐟`;
+  const text = `Aku meraih skor ${score} di Jadi Ikan! Kontrol menggunakan gerakan mulut 🐟`;
 
   try {
     const file = new File([blob], `jadi-ikan-${score}.png`, { type: "image/png" });
@@ -640,7 +640,7 @@ async function doShare() {
     }
   } catch (e) {
     if (e && e.name === "AbortError") {
-      shareNote.textContent = "Share dibatalkan.";
+      shareNote.textContent = "Berbagi dibatalkan.";
       return;
     }
     console.warn("share gagal, fallback ke unduh", e);
@@ -654,7 +654,7 @@ async function doShare() {
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 8000);
-  shareNote.textContent = "Gambar tersimpan — buka IG/X/FB lalu upload.";
+  shareNote.textContent = "Gambar berhasil disimpan. Siap dibagikan ke media sosial.";
 }
 
 function update(dt, t) {
@@ -750,7 +750,7 @@ function update(dt, t) {
       o.scored = true;
       score++;
       elScore.textContent = String(score);
-      showHint(score % 5 === 0 ? `MANTAP ${score}!` : "!", 0.8);
+      showHint(score % 5 === 0 ? `Keren! ${score}` : "!", 0.8);
     }
   }
 
@@ -1090,11 +1090,11 @@ btnCam.addEventListener("click", () => {
 });
 btnTouch.addEventListener("click", () => {
   ensureAudio();
-  startGame("Tahan layar = mangap");
+  startGame("Tahan layar untuk berenang naik");
 });
 btnRetry.addEventListener("click", () => {
   ensureAudio();
-  startGame(mode === "camera" ? "MANGAP = naik • TUTUP MULUT = turun" : "Tahan layar = mangap");
+  startGame(mode === "camera" ? "Buka mulut = naik • Tutup mulut = turun" : "Tahan layar untuk berenang naik");
 });
 
 btnShare.addEventListener("click", doShare);

@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#04263a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Jadi Ikan — kontrol pakai mulut</title>
+<title>Jadi Ikan — Kontrol dengan Gerakan Mulut</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,7 +19,7 @@
     <div id="camwrap">
       <video id="cam" playsinline autoplay muted></video>
       <div id="jaw"><div id="jawfill"></div></div>
-      <div id="camnote">wajah nggak terbaca</div>
+      <div id="camnote">Wajah belum terdeteksi</div>
     </div>
   </div>
 
@@ -27,10 +27,10 @@
     <div class="card">
       <div class="logo">🐟</div>
       <h1>JADI<br>IKAN</h1>
-      <p class="sub">Hindari pancingan. Kontrolnya pakai <b>muka lu sendiri</b>:<br>
-        <span class="tag up">MANGAP = NAIK</span> <span class="tag down">TUTUP MULUT = TURUN</span></p>
+      <p class="sub">Hindari kail pancing. Kontrol menggunakan <b>gerakan wajah kamu</b>:<br>
+        <span class="tag up">BUKA MULUT = NAIK</span> <span class="tag down">TUTUP MULUT = TURUN</span></p>
       <button class="btn primary" id="btn-cam">Nyalakan Kamera</button>
-      <button class="btn ghost" id="btn-touch">Main pakai jari</button>
+      <button class="btn ghost" id="btn-touch">Main dengan sentuhan</button>
       <p class="err" id="cam-err"></p>
     </div>
   </div>
@@ -44,10 +44,10 @@
         <div><span id="best-score">0</span><label>Terbaik</label></div>
       </div>
       <div id="snaps" class="hidden">
-        <p class="snap-cap">muka lu tadi 📸</p>
+        <p class="snap-cap">Ekspresi lucu kamu 📸</p>
         <div id="snap-row"></div>
       </div>
-      <button class="btn share" id="btn-share">Bagikan ke IG / X / FB</button>
+      <button class="btn share" id="btn-share">Bagikan ke Media Sosial</button>
       <p class="err" id="share-note"></p>
       <button class="btn primary" id="btn-retry">Main Lagi</button>
       <p class="err" id="over-note"></p>
