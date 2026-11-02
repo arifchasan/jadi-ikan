@@ -58,6 +58,53 @@ const START = 0,
   OVER = 2;
 let state = START;
 
+/* ---------- Audio (SFX air halus, tanpa ambient latar) ---------- */
+let audioCtx = null;
+
+function ensureAudio() {
+  if (!audioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) {
+      audioCtx = new AudioContextClass();
+    }
+  }
+  if (audioCtx && audioCtx.state === "suspended") {
+    audioCtx.resume().catch(() => {});
+  }
+}
+
+function blubOnce() {
+  try {
+    ensureAudio();
+    if (!audioCtx) return;
+
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = "sine";
+
+    // Suara beep tetesan air / gelembung halus:
+    // Nada menyapu naik lembut dari ~440Hz ke ~920Hz
+    const baseFreq = 440 + Math.random() * 30;
+    osc.frequency.setValueAtTime(baseFreq, t);
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * 2.1, t + 0.08);
+
+    // Envelope lembut: attack 5ms agar bebas klik, decay eksponensial halus ~0.11s
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.linearRampToValueAtTime(0.2, t + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.11);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start(t);
+    osc.stop(t + 0.12);
+  } catch (e) {
+    console.warn("audio play failed", e);
+  }
+}
+
 let mode = "touch"; // "camera" | "touch"
 let landmarker = null;
 let stream = null;
@@ -203,8 +250,14 @@ function detectFace(ts) {
   elJaw.style.width = Math.round(clamp(mouthRaw, 0, 1) * 100) + "%";
 
   // histeresis biar nggak kedip-kedip
-  if (mouthRaw > 0.3) mouthOpen = true;
-  else if (mouthRaw < 0.16) mouthOpen = false;
+  if (mouthRaw > 0.3) {
+    if (!mouthOpen && state === PLAY) {
+      blubOnce();
+    }
+    mouthOpen = true;
+  } else if (mouthRaw < 0.16) {
+    mouthOpen = false;
+  }
 }
 
 /* =========================================================
@@ -264,6 +317,7 @@ function startGame(hintText) {
   shownFaces = [];
   shareNote.textContent = "";
   if (hintText) showHint(hintText, 3.2);
+  ensureAudio();
 }
 
 function die() {
@@ -279,6 +333,7 @@ function die() {
   finalScore.textContent = String(score);
   bestScore.textContent = String(best);
   overNote.textContent = mode === "camera" ? "" : "Tips: nyalain kamera buat kontrol mulut";
+  blubOnce();
   setTimeout(() => screenOver.classList.remove("hidden"), 420);
 }
 
@@ -991,13 +1046,15 @@ function frame(now) {
   render(now / 1000);
   requestAnimationFrame(frame);
 }
-requestAnimationFrame(frame);
 
 /* =========================================================
    INPUT
    ========================================================= */
 function pressStart(e) {
-  if (state === PLAY) touchHeld = true;
+  if (state === PLAY) {
+    touchHeld = true;
+    blubOnce();
+  }
 }
 function pressEnd() {
   touchHeld = false;
@@ -1019,6 +1076,7 @@ window.addEventListener("keydown", (e) => {
       startGame();
     } else {
       touchHeld = true;
+      blubOnce();
     }
   }
 });
@@ -1026,11 +1084,21 @@ window.addEventListener("keyup", (e) => {
   if (e.code === "Space" || e.code === "ArrowUp") touchHeld = false;
 });
 
-btnCam.addEventListener("click", startCamera);
-btnTouch.addEventListener("click", () => startGame("Tahan layar = mangap"));
+btnCam.addEventListener("click", () => {
+  ensureAudio();
+  startCamera();
+});
+btnTouch.addEventListener("click", () => {
+  ensureAudio();
+  startGame("Tahan layar = mangap");
+});
 btnRetry.addEventListener("click", () => {
+  ensureAudio();
   startGame(mode === "camera" ? "MANGAP = naik • TUTUP MULUT = turun" : "Tahan layar = mangap");
 });
+
 btnShare.addEventListener("click", doShare);
 
 bestScore.textContent = String(best);
+
+requestAnimationFrame(frame);
